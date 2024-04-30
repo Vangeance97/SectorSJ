@@ -6,15 +6,12 @@
     <title>Consulta de Sector V1.0.3</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        html,
-        body {
+        html, body {
             height: 100%;
             margin: 0;
         }
-
         body {
             background-image: url('abg.png');
-            /* Asegúrate de que la imagen exista en la ruta especificada */
             background-size: cover;
             background-position: center;
             display: flex;
@@ -22,7 +19,6 @@
             align-items: center;
             color: #fff;
         }
-
         .container {
             padding: 20px;
             border-radius: 10px;
@@ -30,96 +26,96 @@
             flex-direction: column;
             align-items: center;
         }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
         .form-control {
             height: 60px;
-            /* Altura aumentada de los inputs */
             width: 500px;
-            /* Ancho reducido de los inputs */
             font-size: 2.25rem;
-            /* Tamaño de letra aumentado */
         }
-
         #sugerenciasDireccion {
             background-color: #ffffff;
-            /* Fondo blanco para la lista */
             color: #000000;
-            /* Texto en color negro */
             position: absolute;
-            width: 300px;
-            /* Ajuste para coincidir con el ancho del input de dirección */
+            width: 500px;
             z-index: 1000;
-            /* Asegúrate de que la lista esté sobre otros elementos */
             max-height: 200px;
-            /* Limita la altura y permite scroll */
             overflow-y: auto;
         }
-
         #sugerenciasDireccion li {
             cursor: pointer;
-            /* Cambia el cursor para indicar que los elementos son seleccionables */
         }
-
         .modal-content {
             background-color: #333;
-            /* Fondo oscuro para la modal */
             color: #fff;
-            /* Letra en blanco para la modal */
         }
-
         .button-group button {
             margin-right: 10px;
-            /* Añade un margen a la derecha de cada botón */
             height: 60px;
             width: 150px;
         }
-
         .button-group button:last-child {
             margin-right: 0;
-            /* Remueve el margen al último botón para evitar espacio extra al final */
         }
-
-        .container h2,
-        .container label {
-            color: rgb(254, 253, 253);
-            font-size: 24px;
-            /* Establece el color del texto a negro */
+        /* Estilos para la pantalla de carga */
+        #loadingScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black; /* Pantalla totalmente negra */
+            z-index: 9999;
+        }
+        #progressBar {
+            width: 50%;
+            padding: 10px;
+            background-color: black; /* Fondo de la barra también negro */
+            border-radius: 5px;
+            box-shadow: 0 0 10px #fff; /* Sombra blanca para destacar la barra */
+        }
+        #progress {
+            height: 20px;
+            background-color: white; /* Barra de progreso blanca */
+            width: 0%;
+            border-radius: 5px;
         }
     </style>
 </head>
 
 <body>
+    <!-- Pantalla de carga -->
+    <div id="loadingScreen">
+        <div id="progressBar">
+            <div id="progress"></div>
+        </div>
+    </div>
+    
     <div class="container">
-        <h2>Consulta de Sector SJ 2024 V1.0.3</h2>
+        <h2>Consulta de Sector</h2>
         <div class="form-group">
             <label for="direccion">Dirección:</label>
-            <input type="text" class="form-control" id="direccion" oninput="sugerirDireccion()" autocomplete="off"
-                required>
+            <input type="text" class="form-control" id="direccion" oninput="sugerirDireccion()" autocomplete="off" required aria-label="Ingrese dirección">
             <ul id="sugerenciasDireccion" class="list-group"></ul>
         </div>
         <div class="form-group">
             <label for="numeracion">Numeración:</label>
-            <input type="number" class="form-control" id="numeracion" required>
+            <input type="number" class="form-control" id="numeracion" required aria-label="Ingrese numeración">
         </div>
-        <div class="button-group" style="display: flex;"> <!-- Contenedor para los botones con display flex -->
+        <div class="button-group">
             <button class="btn btn-primary" onclick="buscarSector()">Buscar</button>
             <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
         </div>
     </div>
 
-
     <!-- Modal -->
-    <div class="modal fade" id="resultadoModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="resultadoModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalLabel">Resultado de Búsqueda</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" the close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -132,10 +128,11 @@
             </div>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-        const sectores = {
+                const sectores = {
             'Sector 1 ABG': 'Sector 1 - CECOSF Martin Henriquez, Ubicado en Martin Henriquez Nº 4537 - Fono: 226124506',
             'Sector 2 ABG': 'Sector 2 - CESFAM Dr. Arturo Baeza Goñi, Ubicado en Alvarez de Toledo Nº 399 - Fono 223962235',
             'Sector 3 ABG': 'Sector 3 - CESFAM Dr. Arturo Baeza Goñi, Ubicado en Alvarez de Toledo Nº 399 - Fono 223962211',
@@ -149,7 +146,7 @@
         };
         const direcciones = [
             { nombre: 'Alcalde Pedro Alarcon', rango: [{ inicio: 300, fin: 499, sector: 'Sector 3 ABG' }, { inicio: 503, fin: 670, sector: 'Sector 2 ABG' }] },
-            { nombre: 'Alonso de Ojeda', rango: [{ inicio: 4650, fin: 4699, sector: 'Sector 1 ABG' }] },
+            { nombre: 'Alonso de Ojeda', rango: [{ inicio: 4650, fin: 4699, sector: 'Sector 1 ABG' },{ inicio: 4712, fin: 4867, sector: 'Sector 3 STA' }, { inicio: 4904, fin: 5141, sector: 'Sector 3 STA' }] },
             { nombre: 'Alvarez de Toledo', rango: [{ inicio: 403, fin: 661, sector: 'Sector 2 ABG' }, { inicio: 300, fin: 399, sector: 'Sector 3 ABG' }] },
             { nombre: 'Anakena', rango: [{ inicio: 3312, fin: 3424, sector: 'Sector 2 ABG' }] },
             { nombre: 'Antartica', rango: [{ inicio: 3280, fin: 3461, sector: 'Sector 3 ABG' }] },
@@ -167,8 +164,8 @@
             { nombre: 'Comercio', rango: [{ inicio: 300, fin: 399, sector: 'Sector 3 ABG' }] },
             { nombre: 'Constancia', rango: [{ inicio: 300, fin: 399, sector: 'Sector 3 ABG' }] },
             { nombre: 'Copacabana', rango: [{ inicio: 404, fin: 543, sector: 'Sector 2 ABG' }] },
-            { nombre: 'Cristobal de Erazo', rango: [{ inicio: 4210, fin: 4699, sector: 'Sector 1 ABG' }] },
-            { nombre: 'Diego de Meza', rango: [{ inicio: 4651, fin: 4699, sector: 'Sector 1 ABG' }] },
+            { nombre: 'Cristobal de Erazo', rango: [{ inicio: 4210, fin: 4699, sector: 'Sector 1 ABG' }, { inicio: 4741, fin: 4858, sector: 'Sector 3 STA' }, { inicio: 4907, fin: 5137, sector: 'Sector 3 STA' }] },
+            { nombre: 'Diego de Meza', rango: [{ inicio: 4651, fin: 4699, sector: 'Sector 1 ABG' }, { inicio: 4742, fin: 4858, sector: 'Sector 3 STA' }, { inicio: 4904, fin: 5441, sector: 'Sector 3 STA' }] },
             { nombre: 'Drake', rango: [{ inicio: 300, fin: 398, sector: 'Sector 3 ABG' }] },
             { nombre: 'Embajador Noel', rango: [{ inicio: 401, fin: 550, sector: 'Sector 2 ABG' }] },
             { nombre: 'Esfuerzo', rango: [{ inicio: 300, fin: 399, sector: 'Sector 3 ABG' }] },
@@ -177,9 +174,10 @@
             { nombre: 'Gaspar de Soto', rango: [{ inicio: 399, fin: 498, sector: 'Sector 1 ABG' }] },
             { nombre: 'Hangaroa', rango: [{ inicio: 657, fin: 661, sector: 'Sector 2 ABG' }] },
             { nombre: 'Ingeniero Budge', rango: [{ inicio: 201, fin: 499, sector: 'Sector 1 ABG' }] },
+
             { nombre: 'Jorge Canning', rango: [{ inicio: 471, fin: 688, sector: 'Sector 2 ABG' }] },
-            { nombre: 'Juan Griego', rango: [{ inicio: 4301, fin: 4684, sector: 'Sector 1 ABG' }] },
-            { nombre: 'Juan Rivadeneira', rango: [{ inicio: 4120, fin: 4699, sector: 'Sector 1 ABG' }] },
+            { nombre: 'Juan Griego', rango: [{ inicio: 4301, fin: 4684, sector: 'Sector 1 ABG' }, { inicio: 4723, fin: 4884, sector: 'Sector 3 STA' }, { inicio: 5120, fin: 5340, sector: 'Sector 3 STA' }, { inicio: 4916, fin: 5060, sector: 'Sector 3 STA' }, { inicio: 5145, fin: 5475, sector: 'Sector 3 STA' }] },
+            { nombre: 'Juan Rivadeneira', rango: [{ inicio: 4120, fin: 4699, sector: 'Sector 1 ABG' }, { inicio: 4915, fin: 5045, sector: 'Sector 3 STA' }, { inicio: 4924, fin: 5116, sector: 'Sector 3 STA' }] },
             { nombre: 'Juegos Infantiles', rango: [{ inicio: 3282, fin: 3429, sector: 'Sector 2 ABG' }] },
             { nombre: 'Karl Brunner', rango: [{ inicio: 3253, fin: 3430, sector: 'Sector 2 ABG' }] },
             { nombre: 'Las Acacias', rango: [{ inicio: 430, fin: 433, sector: 'Sector 2 ABG' }] },
@@ -194,7 +192,7 @@
             { nombre: 'Manutara', rango: [{ inicio: 3314, fin: 3424, sector: 'Sector 2 ABG' }] },
             { nombre: 'Maria Elena', rango: [{ inicio: 3311, fin: 3371, sector: 'Sector 3 ABG' }] },
             { nombre: 'Mario Lanza', rango: [{ inicio: 565, fin: 570, sector: 'Sector 2 ABG' }] },
-            { nombre: 'Martin Henriquez', rango: [{ inicio: 4123, fin: 4695, sector: 'Sector 1 ABG' }] },
+            { nombre: 'Martin Henriquez', rango: [{ inicio: 4123, fin: 4695, sector: 'Sector 1 ABG' }, { inicio: 4917, fin: 5044, sector: 'Sector 3 STA' }, { inicio: 5122, fin: 5293, sector: 'Sector 3 STA' }] },
             { nombre: 'Matta Vial', rango: [{ inicio: 501, fin: 682, sector: 'Sector 2 ABG' }] },
             { nombre: 'Mejillones', rango: [{ inicio: 3312, fin: 3351, sector: 'Sector 3 ABG' }] },
             { nombre: 'Michelson', rango: [{ inicio: 460, fin: 473, sector: 'Sector 1 ABG' }] },
@@ -226,10 +224,11 @@
             { nombre: 'Teniente Soto', rango: [{ inicio: 300, fin: 396, sector: 'Sector 1 ABG' }] },
             { nombre: 'Toromiro', rango: [{ inicio: 3212, fin: 3326, sector: 'Sector 2 ABG' }] },
             { nombre: 'Ureta Cox', rango: [{ inicio: 206, fin: 499, sector: 'Sector 1 ABG' }] },
-            { nombre: 'Vasco Nuñez de Balboa', rango: [{ inicio: 4650, fin: 4699, sector: 'Sector 1 ABG' }] },
+            { nombre: 'Vasco Nuñez de Balboa', rango: [{ inicio: 4650, fin: 4699, sector: 'Sector 1 ABG' }, { inicio: 4742, fin: 4858, sector: 'Sector 3 STA' }, { inicio: 4903, fin: 5142, sector: 'Sector 3 STA' }] },
             { nombre: 'Venecia', rango: [{ inicio: 3281, fin: 3446, sector: 'Sector 2 ABG' }] },
             { nombre: 'Zenon Torrealba', rango: [{ inicio: 502, fin: 590, sector: 'Sector 2 ABG' }] },
-            { nombre: 'Santa Rosa', rango: [{ inicio: 4220, fin: 4698, sector: 'Sector 1 ABG' }, { inicio: 2760, fin: 4188, sector: 'Sector 2 ABG' }] },
+            { nombre: 'Santa Rosa', rango: [{ inicio: 4220, fin: 4698, sector: 'Sector 1 ABG' }, { inicio: 2760, fin: 4188, sector: 'Sector 2 ABG' }, { inicio: 4750, fin: 4866, sector: 'Sector 3 STA' }, { inicio: 5050, fin: 5320, sector: 'Sector 3 STA' }, { inicio: 5500, fin: 5980, sector: 'Sector 2 STA' }] },
+
             {
                 nombre: 'San Gregorio', rango: [{ inicio: 4304, fin: 4399, sector: 'Sector 1 ABG' }, { inicio: 3311, fin: 3499, sector: 'Sector 2 ABG', lado: 'impar' },
                 { inicio: 3788, fin: 4278, sector: 'Sector 2 ABG' }, { inicio: 3310, fin: 3786, sector: 'Sector 3 ABG', lado: 'par' }]
@@ -255,7 +254,6 @@
             { nombre: 'Abedul', rango: [{ inicio: 5305, fin: 5397, sector: 'Sector 4 STA' }] },
             { nombre: 'Adriano', rango: [{ inicio: 313, fin: 314, sector: 'Sector 2 STA' }] },
             { nombre: 'Alejandro Flores', rango: [{ inicio: 291, fin: 304, sector: 'Sector 4 STA' }] },
-            { nombre: 'Alonso de Ojeda', rango: [{ inicio: 4712, fin: 4867, sector: 'Sector 3 STA' }, { inicio: 4904, fin: 5141, sector: 'Sector 3 STA' }] },
             { nombre: 'Alvaro Puga', rango: [{ inicio: 4745, fin: 4845, sector: 'Sector 4 STA' }] },
             { nombre: 'Ancoa', rango: [{ inicio: 4945, fin: 5328, sector: 'Sector 4 STA' }] },
             { nombre: 'Anibal', rango: [{ inicio: 5964, fin: 5979, sector: 'Sector 5 STA' }] },
@@ -266,8 +264,7 @@
             { nombre: 'Aranjuez', rango: [{ inicio: 372, fin: 381, sector: 'Sector 5 STA' }] },
             { nombre: 'Armando Mook', rango: [{ inicio: 294, fin: 396, sector: 'Sector 4 STA' }] },
             { nombre: 'Arturo Pardo', rango: [{ inicio: 437, fin: 455, sector: 'Sector 5 STA' }] },
-            { nombre: 'Berlioz', rango: [{ inicio: 5510, fin: 5979, sector: 'Sector 5 STA' }, { inicio: 5983, fin: 6285, sector: 'Sector 5 STA' }, { inicio: 6219, fin: 6399, sector: 'Sector 5 STA' }] },
-            { nombre: 'BERLIOZ (NUEVA)', rango: [{ inicio: 5331, fin: 5461, sector: 'Sector 3 STA' }] },
+            { nombre: 'Berlioz', rango: [{ inicio: 5510, fin: 5979, sector: 'Sector 5 STA' }, { inicio: 5983, fin: 6285, sector: 'Sector 5 STA' }, { inicio: 6219, fin: 6399, sector: 'Sector 5 STA' }, , { inicio: 5331, fin: 5461, sector: 'Sector 3 STA' } ] },
             { nombre: 'Bermudas', rango: [{ inicio: 6201, fin: 6398, sector: 'Sector 5 STA' }] },
             { nombre: 'Boecio', rango: [{ inicio: 336, fin: 346, sector: 'Sector 5 STA' }] },
             { nombre: 'Boticelli', rango: [{ inicio: 5319, fin: 5488, sector: 'Sector 3 STA' }] },
@@ -294,9 +291,9 @@
             { nombre: 'Carmen Mena', rango: [{ inicio: 135, fin: 224, sector: 'Sector 1 STA' }, { inicio: 219, fin: 259, sector: 'Sector 1 STA' }, { inicio: 277, fin: 295, sector: 'Sector 1 STA' }, { inicio: 307, fin: 351, sector: 'Sector 2 STA' }] },
             { nombre: 'Castilla', rango: [{ inicio: 364, fin: 433, sector: 'Sector 5 STA' }] },
             { nombre: 'Catiao', rango: [{ inicio: 227, fin: 242, sector: 'Sector 1 STA' }] },
-            { nombre: 'Catruman', rango: [{ inicio: 276, fin: 286, sector: 'Sector 1 STA' }] },
+            { nombre: 'Catruman', rango: [{ inicio: 275, fin: 286, sector: 'Sector 1 STA' }] },
             { nombre: 'Caucura', rango: [{ inicio: 6321, fin: 6399, sector: 'Sector 1 STA' }] },
-            { nombre: 'CECILIA(PSJE)', rango: [{ inicio: 6201, fin: 6398, sector: 'Sector 5 STA' }] },
+            { nombre: 'Cecilia', rango: [{ inicio: 6201, fin: 6398, sector: 'Sector 5 STA' }] },
             { nombre: 'Cepal', rango: [{ inicio: 116, fin: 128, sector: 'Sector 1 STA' }] },
             { nombre: 'Ceylan', rango: [{ inicio: 6201, fin: 6398, sector: 'Sector 5 STA' }] },
             { nombre: 'Chacalluta', rango: [{ inicio: 201, fin: 231, sector: 'Sector 4 STA' }] },
@@ -326,8 +323,7 @@
             { nombre: 'Daniel de la Vega', rango: [{ inicio: 388, fin: 400, sector: 'Sector 5 STA' }] },
             { nombre: 'Daniel Defoe', rango: [{ inicio: 201, fin: 210, sector: 'Sector 4 STA' }] },
             { nombre: 'Delfin Galaz', rango: [{ inicio: 5127, fin: 5343, sector: 'Sector 4 STA' }] },
-            { nombre: 'Departamental', rango: [{ inicio: 6, fin: 92, sector: 'Sector 1 STA' }, { inicio: 100, fin: 220, sector: 'Sector 1 STA' }, { inicio: 21, fin: 199, sector: 'Sector 4 STA' }, { inicio: 209, fin: 231, sector: 'Sector 4 STA' }, { inicio: 295, fin: 307, sector: 'Sector 4 STA' }, { inicio: 309, fin: 337, sector: 'Sector 2 STA' }, { inicio: 347, fin: 385, sector: 'Sector 3 STA' }, { inicio: 395, fin: 469, sector: 'Sector 3 STA' }, { inicio: 350, fin: 488, sector: 'Sector º' }] },
-            { nombre: 'Diego de Meza', rango: [{ inicio: 4742, fin: 4858, sector: 'Sector 3 STA' }, { inicio: 4904, fin: 5441, sector: 'Sector 3 STA' }] },
+            { nombre: 'Departamental', rango: [{ inicio: 6, fin: 92, sector: 'Sector 1 STA' }, { inicio: 100, fin: 220, sector: 'Sector 1 STA' }, { inicio: 21, fin: 199, sector: 'Sector 4 STA' }, { inicio: 209, fin: 231, sector: 'Sector 4 STA' }, { inicio: 295, fin: 307, sector: 'Sector 4 STA' }, { inicio: 309, fin: 337, sector: 'Sector 2 STA' }, { inicio: 347, fin: 385, sector: 'Sector 3 STA' }, { inicio: 395, fin: 469, sector: 'Sector 3 STA' }, { inicio: 350, fin: 488, sector: 'Sector 3' }] },
             { nombre: 'Doca', rango: [{ inicio: 249, fin: 258, sector: 'Sector 1 STA' }] },
             { nombre: 'Dolores', rango: [{ inicio: 5121, fin: 5194, sector: 'Sector 4 STA' }] },
             { nombre: 'Domenica de Biase', rango: [{ inicio: 422, fin: 445, sector: 'Sector 3 STA' }] },
@@ -369,7 +365,7 @@
             { nombre: 'Girasol', rango: [{ inicio: 5398, fin: 6201, sector: 'Sector 5 STA' }] },
             { nombre: 'Graciano', rango: [{ inicio: 305, fin: 348, sector: 'Sector 2 STA' }] },
             { nombre: 'Gustavo Campaña', rango: [{ inicio: 4856, fin: 5380, sector: 'Sector 4 STA' }, { inicio: 5025, fin: 5491, sector: 'Sector 4 STA' }] },
-            { nombre: 'HAYDN', rango: [{ inicio: 5613, fin: 6297, sector: 'Sector 1 STA' }, { inicio: 5980, fin: 6298, sector: 'Sector 1 STA' }, { inicio: 4566, fin: 4663, sector: 'Sector 4 STA' }, { inicio: 4998, fin: 5594, sector: 'Sector 4 STA' }] },
+            { nombre: 'Haydn', rango: [{ inicio: 5613, fin: 6297, sector: 'Sector 1 STA' }, { inicio: 5980, fin: 6298, sector: 'Sector 1 STA' }, { inicio: 4566, fin: 4663, sector: 'Sector 4 STA' }, { inicio: 4998, fin: 5594, sector: 'Sector 4 STA' }] },
             { nombre: 'Hector Barrueto', rango: [{ inicio: 5281, fin: 5381, sector: 'Sector 4 STA' }] },
             { nombre: 'Herman Hesse', rango: [{ inicio: 200, fin: 202, sector: 'Sector 4 STA' }] },
             { nombre: 'Himalaya', rango: [{ inicio: 5944, fin: 5992, sector: 'Sector 5 STA' }] },
@@ -381,9 +377,6 @@
             { nombre: 'Huite', rango: [{ inicio: 5763, fin: 5781, sector: 'Sector 1 STA' }] },
             { nombre: 'Iloca', rango: [{ inicio: 399, fin: 411, sector: 'Sector 3 STA' }] },
             { nombre: 'Imperial', rango: [{ inicio: 6120, fin: 6141, sector: 'Sector 1 STA' }] },
-            { nombre: 'ING. BUDGE', rango: [{ inicio: 403, fin: 419, sector: 'Sector 3 STA' }] },
-            { nombre: 'ING.BUDGE', rango: [{ inicio: 100, fin: 284, sector: 'Sector 4 STA' }] },
-            { nombre: 'INGENIERO BUDGE', rango: [{ inicio: 200, fin: 400, sector: 'Sector 2 STA' }] },
             { nombre: 'Ingeniero Maria Diaz', rango: [{ inicio: 312, fin: 346, sector: 'Sector 2 STA' }, { inicio: 351, fin: 380, sector: 'Sector 2 STA' }] },
             { nombre: 'Isla Bahamas', rango: [{ inicio: 6007, fin: 6048, sector: 'Sector 5 STA' }] },
             { nombre: 'Isla Canarias', rango: [{ inicio: 462, fin: 474, sector: 'Sector 5 STA' }] },
@@ -394,9 +387,7 @@
             { nombre: 'Jose Manuel Perez', rango: [{ inicio: 60, fin: 91, sector: 'Sector 4 STA' }] },
             { nombre: 'José Toribio Medina', rango: [{ inicio: 386, fin: 399, sector: 'Sector 5 STA' }] },
             { nombre: 'Juan Aravena', rango: [{ inicio: 384, fin: 480, sector: 'Sector 5 STA' }, { inicio: 389, fin: 497, sector: 'Sector 5 STA' }] },
-            { nombre: 'Juan Griego', rango: [{ inicio: 4723, fin: 4884, sector: 'Sector 3 STA' }, { inicio: 5120, fin: 5340, sector: 'Sector 3 STA' }, { inicio: 4916, fin: 5060, sector: 'Sector 3 STA' }, { inicio: 5145, fin: 5475, sector: 'Sector 3 STA' }] },
             { nombre: 'Juan Planas', rango: [{ inicio: 5779, fin: 5788, sector: 'Sector 5 STA' }] },
-            { nombre: 'JUAN RIVADENEIRA', rango: [{ inicio: 4915, fin: 5045, sector: 'Sector 3 STA' }, { inicio: 4924, fin: 5116, sector: 'Sector 3 STA' }] },
             { nombre: 'Juanita Fernandez', rango: [{ inicio: 155, fin: 200, sector: 'Sector 4 STA' }] },
             { nombre: 'Julio Verne', rango: [{ inicio: 194, fin: 202, sector: 'Sector 4 STA' }] },
             { nombre: 'La Castrina', rango: [{ inicio: 267, fin: 327, sector: 'Sector 2 STA' }, { inicio: 276, fin: 484, sector: 'Sector 5 STA' }] },
@@ -417,7 +408,7 @@
             { nombre: 'Las Vega', rango: [{ inicio: 5721, fin: 5836, sector: 'Sector 1 STA' }] },
             { nombre: 'Las Villas', rango: [{ inicio: 5720, fin: 5791, sector: 'Sector 1 STA' }] },
             { nombre: 'Latinoamerica', rango: [{ inicio: 6210, fin: 6390, sector: 'Sector 1 STA' }, { inicio: 6211, fin: 6287, sector: 'Sector 5 STA' }] },
-            { nombre: 'LATINOAMERICA HASTA SANTA ROSA', rango: [{ inicio: 329, fin: 467, sector: 'Sector 5 STA' }] },
+            //{ nombre: 'LATINOAMERICA HASTA SANTA ROSA', rango: [{ inicio: 329, fin: 467, sector: 'Sector 5 STA' }] },
             { nombre: 'Lechuaga', rango: [{ inicio: 5631, fin: 5726, sector: 'Sector 1 STA' }] },
             { nombre: 'Linlin', rango: [{ inicio: 231, fin: 244, sector: 'Sector 1 STA' }, { inicio: 210, fin: 224, sector: 'Sector 4 STA' }] },
             { nombre: 'Llanco', rango: [{ inicio: 6030, fin: 3040, sector: 'Sector 1 STA' }] },
@@ -448,7 +439,6 @@
             { nombre: 'Mario Miño', rango: [{ inicio: 5841, fin: 5560, sector: 'Sector 4 STA' }] },
             { nombre: 'Mark Twain', rango: [{ inicio: 5573, fin: 5597, sector: 'Sector 4 STA' }] },
             { nombre: 'Marta Eugussola', rango: [{ inicio: 189, fin: 191, sector: 'Sector 4 STA' }] },
-            { nombre: 'MARTIN HENRIQUEZ', rango: [{ inicio: 4917, fin: 5044, sector: 'Sector 3 STA' }, { inicio: 5122, fin: 5293, sector: 'Sector 3 STA' }] },
             { nombre: 'Matilla', rango: [{ inicio: 203, fin: 229, sector: 'Sector 4 STA' }] },
             { nombre: 'Matri', rango: [{ inicio: 277, fin: 295, sector: 'Sector 1 STA' }] },
             { nombre: 'Matte Hurtado', rango: [{ inicio: 5210, fin: 5580, sector: 'Sector 4 STA' }] },
@@ -538,8 +528,6 @@
             { nombre: 'San Juan', rango: [{ inicio: 5305, fin: 5393, sector: 'Sector 4 STA' }] },
             { nombre: 'San Nicolas', rango: [{ inicio: 308, fin: 348, sector: 'Sector 2 STA' }, { inicio: 321, fin: 354, sector: 'Sector 3 STA' }, { inicio: 356, fin: 492, sector: 'Sector 3 STA' }, { inicio: 357, fin: 399, sector: 'Sector 3 STA' }, { inicio: 401, fin: 499, sector: 'Sector 3 STA' }, { inicio: 141, fin: 243, sector: 'Sector 1 STA4' }, { inicio: 201, fin: 246, sector: 'Sector 4 STA' }, { inicio: 268, fin: 305, sector: 'Sector 4 STA' }] },
             { nombre: 'Sandino', rango: [{ inicio: 29, fin: 91, sector: 'Sector 1 STA' }] },
-            { nombre: 'SANTA ROSA', rango: [{ inicio: 4750, fin: 4866, sector: 'Sector 3 STA' }, { inicio: 5050, fin: 5320, sector: 'Sector 3 STA' }] },
-            { nombre: 'SANTA ROSA Y OVALLE', rango: [{ inicio: 5500, fin: 5980, sector: 'Sector 2 STA' }] },
             { nombre: 'Santiago Ruiseñor', rango: [{ inicio: 4786, fin: 4858, sector: 'Sector 3 STA' }, { inicio: 4915, fin: 5130, sector: 'Sector 3 STA' }] },
             { nombre: 'Sebastopol', rango: [{ inicio: 280, fin: 419, sector: 'Sector 5 STA' }] },
             { nombre: 'Sinfonico', rango: [{ inicio: 5740, fin: 5758, sector: 'Sector 5 STA' }] },
@@ -558,7 +546,6 @@
             { nombre: 'Ureta Cox', rango: [{ inicio: 275, fin: 398, sector: 'Sector 3 STA' }, { inicio: 400, fin: 498, sector: 'Sector 3 STA' }, { inicio: 144, fin: 164, sector: 'Sector 4 STA' }, { inicio: 158, fin: 206, sector: 'Sector 4 STA' }, { inicio: 206, fin: 224, sector: 'Sector 4 STA' }, { inicio: 226, fin: 274, sector: 'Sector 2 STA' }] },
             { nombre: 'Uthant', rango: [{ inicio: 6258, fin: 6280, sector: 'Sector 1 STA' }] },
             { nombre: 'Varas Mena', rango: [{ inicio: 307, fin: 348, sector: 'Sector 2 STA' }, { inicio: 349, fin: 500, sector: 'Sector 5 STA' }, { inicio: 124, fin: 299, sector: 'Sector 1 STA' }] },
-            { nombre: 'Vasco Nuñez de Balboa', rango: [{ inicio: 4742, fin: 4858, sector: 'Sector 3 STA' }, { inicio: 4903, fin: 5142, sector: 'Sector 3 STA' }] },
             { nombre: 'Vecinal', rango: [{ inicio: 5624, fin: 5715, sector: 'Sector 1 STA' }, { inicio: 5717, fin: 5781, sector: 'Sector 1 STA' }, { inicio: 5722, fin: 5782, sector: 'Sector 1 STA' }, { inicio: 5705, fin: 6125, sector: 'Sector 1 STA' }, { inicio: 4710, fin: 4898, sector: 'Sector 4 STA' }, { inicio: 4725, fin: 4995, sector: 'Sector 4 STA' }, { inicio: 4916, fin: 4956, sector: 'Sector 4 STA' }] },
             { nombre: 'Veronesse', rango: [{ inicio: 5319, fin: 5497, sector: 'Sector 3 STA' }] },
             { nombre: 'Vicuña Mackenna', rango: [{ inicio: 5769, fin: 5895, sector: 'Sector 1 STA' }, { inicio: 5292, fin: 5591, sector: 'Sector 4 STA' }] },
@@ -578,8 +565,10 @@
             lista.innerHTML = '';
 
             if (input.value.length > 0) {
+                const inputText = input.value.toLowerCase();
                 direcciones.forEach((dir) => {
-                    if (dir.nombre.toLowerCase().startsWith(input.value.toLowerCase())) {
+                    // Aquí cambiamos startsWith por includes para comprobar si cualquier parte del nombre coincide con la entrada
+                    if (dir.nombre.toLowerCase().includes(inputText)) {
                         let elemento = document.createElement('li');
                         elemento.classList.add('list-group-item');
                         elemento.textContent = dir.nombre;
@@ -592,7 +581,6 @@
                 });
             }
         }
-
         function buscarSector() {
             let direccion = document.getElementById('direccion').value.trim().toLowerCase();
             let numeracion = parseInt(document.getElementById('numeracion').value, 10);
@@ -613,13 +601,26 @@
             document.getElementById('resultadoModalTexto').textContent = resultadoTexto;
             $('#resultadoModal').modal('show');
         }
-
+        
         function limpiarFormulario() {
             document.getElementById('direccion').value = '';
             document.getElementById('numeracion').value = '';
             document.getElementById('sugerenciasDireccion').innerHTML = '';
         }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            var progress = document.getElementById('progress');
+            var width = 0;
+            var interval = setInterval(function () {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('loadingScreen').style.display = 'none';
+                } else {
+                    width++;
+                    progress.style.width = width + '%';
+                }
+            }, 80); // 80ms * 100 = 8000ms o 8 segundos
+        });
     </script>
 </body>
-
 </html>
